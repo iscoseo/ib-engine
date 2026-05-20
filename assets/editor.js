@@ -127,19 +127,32 @@
             }
         });
 
+        function positionResetTip() {
+            if (!$currentEditable) return;
+            var offset = $currentEditable.offset();
+            if (!offset) return;
+            $resetTip.css({
+                left: (offset.left + $currentEditable.outerWidth() + 8) + 'px',
+                top: (offset.top - 30) + 'px'
+            });
+        }
+
         function showResetTip($el) {
-            var offset = $el.offset();
-            var tipW = $resetTip.outerWidth();
-            var left = offset.left + ($el.outerWidth() / 2) - (tipW / 2);
-            var top = offset.top - 40;
-            $resetTip.css({ left: left + 'px', top: top + 'px' }).show();
             $currentEditable = $el;
+            positionResetTip();
+            $resetTip.show();
         }
 
         function hideResetTip() {
             $resetTip.hide();
             $currentEditable = null;
         }
+
+        $(window).on('scroll resize', function() {
+            if ($resetTip.is(':visible')) {
+                positionResetTip();
+            }
+        });
 
         $editables.on('click', function() {
             var $el = $(this);
