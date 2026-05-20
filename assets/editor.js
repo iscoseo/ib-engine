@@ -142,8 +142,8 @@
 
         function showResetTip($el) {
             $currentEditable = $el;
-            positionResetTip($el);
             $resetTip.show();
+            positionResetTip($el);
         }
 
         function hideResetTip() {
