@@ -3,7 +3,7 @@
  * IB Engine — Editor Visual
  * 
  * Funciones: ib_text(), ib_get_val(), ib_edit(), ib_val()
- * AJAX: ib_save_content, ib_reset_content, ib_undo_save
+ * AJAX: ib_save_content, ib_reset_content, ib_undo_save, ib_reset_key
  */
 
 if ( ! defined( 'ABSPATH' ) ) exit;
@@ -131,6 +131,52 @@ add_action('wp_ajax_ib_reset_content', function() {
         wp_send_json_success('Todo reseteado');
     }
     wp_send_json_error('Error al resetear');
+});
+
+/**
+ * AJAX: Resetear una clave específica
+ */
+add_action('wp_ajax_ib_reset_key', function() {
+    check_ajax_referer('ib_editor_nonce', 'nonce');
+    if (!current_user_can('edit_posts')) wp_send_json_error('No autorizado');
+
+    $post_id = intval($_POST['post_id']);
+    $key = sanitize_text_field($_POST['key']);
+
+    if ($post_id < 1 || empty($key)) {
+        wp_send_json_error('Parámetros inválidos');
+    }
+
+    // 1. Backup para undo
+    $dir_path = get_post_meta($post_id, '_ib_sections_dir', true);
+    if ($dir_path && is_dir($dir_path)) {
+        $json_file = trailingslashit($dir_path) . 'content.json';
+        $bak_file = trailingslashit($dir_path) . 'content.bak.json';
+        if (file_exists($json_file)) {
+            copy($json_file, $bak_file);
+        }
+    }
+
+    // 2. Borrar de la BD
+    $data = get_post_meta($post_id, '_ib_content_data', true);
+    if (is_array($data) && isset($data[$key])) {
+        unset($data[$key]);
+        update_post_meta($post_id, '_ib_content_data', $data);
+    }
+
+    // 3. Borrar del archivo físico
+    if ($dir_path && is_dir($dir_path)) {
+        $json_file = trailingslashit($dir_path) . 'content.json';
+        if (file_exists($json_file)) {
+            $json_data = json_decode(file_get_contents($json_file), true);
+            if (is_array($json_data) && isset($json_data[$key])) {
+                unset($json_data[$key]);
+                file_put_contents($json_file, json_encode($json_data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+            }
+        }
+    }
+
+    wp_send_json_success('Elemento reseteado: ' . $key);
 });
 
 /**

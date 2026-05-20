@@ -11,7 +11,7 @@ ib-engine/
 ├── ib-engine.php              ← Entry point: cabecera WP, auto-updater, carga módulos
 ├── engine/
 │   ├── sections.php           ← Motor [sections]: shortcode, carga de archivos, enqueue CSS/JS
-│   └── editor.php             ← Editor visual: ib_text(), ib_get_val(), AJAX (save/reset/undo)
+│   └── editor.php             ← Editor visual: ib_text(), ib_get_val(), AJAX (save/reset/undo/reset_key)
 ├── assets/
 │   ├── editor.css             ← Estilos de la toolbar flotante
 │   └── editor.js              ← Lógica de la toolbar (jQuery)
@@ -69,12 +69,13 @@ El icono del plugin se setea vía `puc_pre_inject_info-ib-engine`. Cambiar la UR
 La toolbar aparece para usuarios con `edit_posts`. Botones:
 
 | Botón | Acción |
-|---|---|
+|---|---|---|
 | 🔒/🔓 | Bloquea/desbloquea contenteditable |
 | Guardar | Persiste en BD + content.json |
 | Deshacer | Restaura último guardado (content.bak.json + BD) |
 | Descargar | Exporta JSON |
-| Reset | Vuelve a defaults PHP |
+| Reset All | Vuelve a defaults PHP (todo) |
+| ↺ Reset este elemento | Tooltip flotante al clickear elemento (solo unlock). Resetea SOLO esa clave a su default PHP |
 
 ---
 
@@ -84,7 +85,8 @@ La toolbar aparece para usuarios con `edit_posts`. Botones:
 ib_text() → ib_get_val() → BD (_ib_content_data) → default PHP
 Save → BD + content.json + content.bak.json
 Undo → content.bak.json → content.json + update_post_meta
-Reset → delete_post_meta + unlink(content.json)
+Reset All → delete_post_meta + unlink(content.json)
+Reset Key → backup bak → borrar clave de BD + content.json → re-escribir content.json
 ```
 
 ---

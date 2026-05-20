@@ -13,8 +13,12 @@
                             '<button id="ib-download-btn">Descargar</button>' +
                             '<button id="ib-undo-btn" title="Deshacer último guardado">Deshacer</button>' +
                             '<div class="ib-divider"></div>' +
-                            '<button id="ib-reset-btn" title="Restablecer a valores de archivo">Reset</button>' +
+                            '<button id="ib-reset-btn" title="Restablecer a valores de archivo">Reset All</button>' +
                          '</div>').appendTo('body');
+
+        // Tooltip flotante para reset por elemento
+        var $resetTip = $('<div id="ib-key-reset-tip">↺ Reset este elemento</div>').appendTo('body');
+        var $currentEditable = null;
 
         var $saveBtn = $('#ib-save-btn');
         var $resetBtn = $('#ib-reset-btn');
@@ -31,6 +35,7 @@
             if (isLocked) {
                 $editables.attr('contenteditable', 'false').addClass('ib-locked');
                 $lockBtn.html('🔒').attr('title', 'Activar edición');
+                hideResetTip();
             } else {
                 $editables.attr('contenteditable', 'true').removeClass('ib-locked');
                 $lockBtn.html('🔓').attr('title', 'Bloquear edición');
@@ -119,6 +124,59 @@
                         }
                     }
                 });
+            }
+        });
+
+        function showResetTip($el) {
+            var offset = $el.offset();
+            var tipW = $resetTip.outerWidth();
+            var left = offset.left + ($el.outerWidth() / 2) - (tipW / 2);
+            var top = offset.top - 40;
+            $resetTip.css({ left: left + 'px', top: top + 'px' }).show();
+            $currentEditable = $el;
+        }
+
+        function hideResetTip() {
+            $resetTip.hide();
+            $currentEditable = null;
+        }
+
+        $editables.on('click', function() {
+            var $el = $(this);
+            if (!$el.hasClass('ib-locked')) {
+                showResetTip($el);
+            }
+        });
+
+        $resetTip.on('click', function() {
+            if (!$currentEditable) return;
+            var key = $currentEditable.data('ib-editable');
+            if (!key) return;
+
+            if (!confirm('¿Resetear "' + key + '" a su valor por defecto?')) return;
+
+            $.ajax({
+                url: ibEditor.ajaxurl,
+                type: 'POST',
+                data: {
+                    action: 'ib_reset_key',
+                    post_id: ibEditor.post_id,
+                    nonce: ibEditor.nonce,
+                    key: key
+                },
+                success: function(response) {
+                    if (response.success) {
+                        window.location.reload();
+                    } else {
+                        alert(response.data || 'Error al resetear');
+                    }
+                }
+            });
+        });
+
+        $(document).on('click', function(e) {
+            if (!$(e.target).closest('#ib-key-reset-tip, [data-ib-editable]').length) {
+                hideResetTip();
             }
         });
 
