@@ -31,11 +31,12 @@ define('IB_ENGINE_DIR', plugin_dir_path(__FILE__));
 // Auto-updater desde GitHub
 if (file_exists(IB_ENGINE_DIR . 'lib/plugin-update-checker/plugin-update-checker.php')) {
     require_once IB_ENGINE_DIR . 'lib/plugin-update-checker/plugin-update-checker.php';
-    YahnisElsts\PluginUpdateChecker\v5\PucFactory::buildUpdateChecker(
-        'https://github.com/iscoseo/ib-engine/',
+    $ibUpdater = YahnisElsts\PluginUpdateChecker\v5\PucFactory::buildUpdateChecker(
+        'https://github.com/iscoseo/ib-engine',
         __FILE__,
         'ib-engine'
     );
+    $ibUpdater->setBranch('main');
 }
 
 // Motor de secciones
