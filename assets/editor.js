@@ -152,6 +152,17 @@
             $currentEditable = null;
         }
 
+        var ibScrollPending = false;
+        $(window).on('scroll', function() {
+            if ($resetTip.is(':visible') && !ibScrollPending) {
+                ibScrollPending = true;
+                requestAnimationFrame(function() {
+                    positionResetTip();
+                    ibScrollPending = false;
+                });
+            }
+        });
+
         $editables.on('click focus', function() {
             var $el = $(this);
             if (!$el.hasClass('ib-locked')) {
