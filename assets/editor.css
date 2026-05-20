@@ -107,6 +107,17 @@
     border-color: rgba(255, 255, 255, 0.3) !important;
 }
 
+[data-ib-editable] {
+    vertical-align: baseline !important;
+    line-height: inherit !important;
+    min-height: 0 !important;
+    min-width: 0 !important;
+}
+
+.ib-btn [data-ib-editable] {
+    display: inline !important;
+}
+
 .ib-locked {
     cursor: default !important;
 }
