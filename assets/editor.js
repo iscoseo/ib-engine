@@ -17,7 +17,7 @@
                          '</div>').appendTo('body');
 
         // Tooltip flotante para reset por elemento
-        var $resetTip = $('<div id="ib-key-reset-tip">↺ Reset este elemento</div>').appendTo('body');
+        var $resetTip = $('<div id="ib-key-reset-tip">↺ Reset</div>').appendTo('body');
         var $currentEditable = null;
 
         var $saveBtn = $('#ib-save-btn');
