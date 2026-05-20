@@ -157,10 +157,14 @@
             }
         });
 
-        $editables.on('click', function() {
+        $editables.on('click focus', function() {
             var $el = $(this);
             if (!$el.hasClass('ib-locked')) {
                 showResetTip($el);
+            }
+        }).on('focusout', function(e) {
+            if (!$(e.relatedTarget).closest('#ib-key-reset-tip').length) {
+                hideResetTip();
             }
         });
 
