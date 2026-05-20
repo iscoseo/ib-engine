@@ -31,10 +31,23 @@ define('IB_ENGINE_DIR', plugin_dir_path(__FILE__));
 // Auto-updater desde GitHub
 if (file_exists(IB_ENGINE_DIR . 'lib/plugin-update-checker/plugin-update-checker.php')) {
     require_once IB_ENGINE_DIR . 'lib/plugin-update-checker/plugin-update-checker.php';
-    YahnisElsts\PluginUpdateChecker\v5\PucFactory::buildUpdateChecker(
+    $ibUpdater = YahnisElsts\PluginUpdateChecker\v5\PucFactory::buildUpdateChecker(
         'https://github.com/iscoseo/ib-engine',
         __FILE__
     );
+    
+    // DEBUG: Forzar comprobación en cada carga de admin
+    if (is_admin() && isset($_GET['ib-debug'])) {
+        delete_site_transient('update_plugins');
+        wp_clean_plugins_cache();
+        set_site_transient('update_plugins', null);
+        add_action('admin_notices', function() use ($ibUpdater) {
+            $state = get_site_option($ibUpdater->getUniqueName('option_name'), []);
+            echo '<div class="notice notice-info"><p><strong>IB Engine Debug:</strong></p>';
+            echo '<pre style="font-size:11px;">' . print_r($state, true) . '</pre>';
+            echo '</div>';
+        });
+    }
 }
 
 // Motor de secciones
