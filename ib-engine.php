@@ -2,7 +2,7 @@
 /**
  * Plugin Name: IB Engine
  * Plugin URI: https://iscobelda.com/
- * Description: Motor de secciones modulares y editor visual inline para WordPress. Unifica ib-sections-engine + ib-visual-editor.
+ * Description: Crea páginas modulares con editor visual inline. Edita el contenido directamente desde el frontend — sin formularios ni panel de administración.
  * Version: 1.0.0
  * Author: Iscobelda
  * Author URI: https://iscobelda.com/

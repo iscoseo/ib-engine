@@ -1,6 +1,8 @@
 # IB Engine
 
-Motor de secciones modulares y editor visual inline para WordPress. Unifica `ib-sections-engine` + `ib-visual-editor` en un solo plugin.
+Crea páginas modulares en WordPress con un editor visual que permite editar el contenido directamente desde el frontend. Sin formularios, sin panel de administración — solo haces clic y escribes.
+
+*Antes: ib-sections-engine + ib-visual-editor. Ahora un solo plugin.*
 
 ---
 
