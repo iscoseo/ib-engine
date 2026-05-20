@@ -33,11 +33,36 @@ if (file_exists(IB_ENGINE_DIR . 'lib/plugin-update-checker/plugin-update-checker
     require_once IB_ENGINE_DIR . 'lib/plugin-update-checker/plugin-update-checker.php';
     $ibUpdater = YahnisElsts\PluginUpdateChecker\v5\PucFactory::buildUpdateChecker(
         'https://github.com/iscoseo/ib-engine',
-        __FILE__
+        __FILE__,
+        'ib-engine'
     );
     
-    // Aumentar timeout de 3s a 15s
     add_filter('puc_request_timeout-ib-engine', function() { return 15; });
+    
+    // DEBUG
+    if (is_admin() && isset($_GET['ib-debug'])) {
+        delete_site_transient('update_plugins');
+        set_site_transient('update_plugins', null);
+        wp_clean_plugins_cache();
+        $ibUpdater->checkForUpdates();
+        
+        $update = $ibUpdater->getUpdate();
+        
+        add_action('admin_notices', function() use ($ibUpdater, $update) {
+            echo '<div class="notice notice-info"><p><strong>IB Engine Debug:</strong></p>';
+            echo '<p>Slug: <code>' . $ibUpdater->slug . '</code></p>';
+            echo '<p>Update found: <code>' . ($update ? $update->version : 'NULL') . '</code></p>';
+            echo '<p>Current version: <code>' . $ibUpdater->getInstalledVersion() . '</code></p>';
+            
+            // Check option
+            $opt = get_site_option('external_updates-ib-engine', 'NOT FOUND');
+            echo '<p>Option "external_updates-ib-engine": <code>' . (is_array($opt) ? print_r($opt, true) : $opt) . '</code></p>';
+            
+            $opt2 = get_site_option('update_plugins', 'NOT FOUND');
+            echo '<p>Option "update_plugins" has IB? <code>' . (is_array($opt2) && isset($opt2->response['ib-engine/ib-engine.php']) ? 'YES' : 'NO') . '</code></p>';
+            echo '</div>';
+        });
+    }
 }
 
 // Motor de secciones
