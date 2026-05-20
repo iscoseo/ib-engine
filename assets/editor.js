@@ -134,7 +134,7 @@
             var scrollTop = $(window).scrollTop();
             var scrollLeft = $(window).scrollLeft();
             $resetTip.css({
-                left: (offset.left - scrollLeft) + 'px',
+                left: (offset.left + $currentEditable.outerWidth() - $resetTip.outerWidth() - scrollLeft) + 'px',
                 top: (offset.top - scrollTop - 4) + 'px'
             });
         }
