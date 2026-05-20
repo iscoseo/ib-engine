@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.0.5] — 2026-05-20
+
+### Fixed
+- Texto del tooltip simplificado: "Reset este elemento" → "Reset"
+
 ## [1.0.4] — 2026-05-20
 
 ### Added
