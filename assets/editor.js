@@ -131,13 +131,11 @@
             if (!$currentEditable) return;
             var offset = $currentEditable.offset();
             if (!offset) return;
-            var scrollTop = $(window).scrollTop();
-            var scrollLeft = $(window).scrollLeft();
             var tipW = $resetTip.outerWidth() || 110;
             var tipH = $resetTip.outerHeight() || 30;
             $resetTip.css({
-                left: (offset.left + $currentEditable.outerWidth() - tipW - scrollLeft) + 'px',
-                top: (offset.top - scrollTop - tipH - 6) + 'px'
+                left: (offset.left + $currentEditable.outerWidth() - tipW) + 'px',
+                top: (offset.top - tipH - 6) + 'px'
             });
         }
 
@@ -151,12 +149,6 @@
             $resetTip.hide();
             $currentEditable = null;
         }
-
-        $(window).on('scroll resize', function() {
-            if ($resetTip.is(':visible')) {
-                positionResetTip();
-            }
-        });
 
         $editables.on('click focus', function() {
             var $el = $(this);

@@ -117,7 +117,7 @@
 }
 
 #ib-key-reset-tip {
-    position: fixed !important;
+    position: absolute !important;
     background: transparent !important;
     color: #ef4444 !important;
     padding: 6px 14px !important;
