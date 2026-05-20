@@ -36,36 +36,37 @@ if (file_exists(IB_ENGINE_DIR . 'lib/plugin-update-checker/plugin-update-checker
         __FILE__
     );
     
-    // DEBUG: Forzar comprobación
+    // Aumentar timeout de 3s a 15s
+    add_filter('puc_request_timeout-ib-engine', function() { return 15; });
+    
+    // DEBUG: Quitar después de verificar que funciona
     if (is_admin() && isset($_GET['ib-debug'])) {
         delete_site_transient('update_plugins');
         set_site_transient('update_plugins', null);
         wp_clean_plugins_cache();
-        
-        // Forzar el check ahora
         $ibUpdater->checkForUpdates();
         
-        // Ver qué pilló de GitHub
-        $api = new ReflectionProperty($ibUpdater, 'api');
-        $api->setAccessible(true);
-        $github = $api->getValue($ibUpdater);
+        // Llamada directa a la API
+        $response = wp_remote_get('https://api.github.com/repos/iscoseo/ib-engine/releases/latest', [
+            'timeout' => 15,
+            'headers' => ['User-Agent' => 'WordPress/' . get_bloginfo('version')]
+        ]);
         
-        $latest = $github->getLatestRelease();
-        
-        add_action('admin_notices', function() use ($ibUpdater, $latest, $github) {
+        add_action('admin_notices', function() use ($response) {
             echo '<div class="notice notice-info"><p><strong>IB Engine Debug:</strong></p>';
-            echo '<p>Latest release: <code>' . ($latest ? $latest->tagName : 'NULL') . '</code></p>';
-            echo '<p>Username: <code>' . $github->userName . '</code> | Repo: <code>' . $github->repositoryName . '</code></p>';
-            
-            // Probar API directamente
-            $apiUrl = 'https://api.github.com/repos/' . $github->userName . '/' . $github->repositoryName . '/releases/latest';
-            $response = wp_remote_get($apiUrl, ['headers' => ['User-Agent' => 'WordPress/' . get_bloginfo('version')]]);
-            echo '<p>API status: <code>' . wp_remote_retrieve_response_code($response) . '</code></p>';
             if (is_wp_error($response)) {
                 echo '<p>Error: <code>' . $response->get_error_message() . '</code></p>';
             } else {
-                $body = json_decode(wp_remote_retrieve_body($response));
-                echo '<p>API Tag: <code>' . ($body->tag_name ?? 'N/A') . '</code></p>';
+                $code = wp_remote_retrieve_response_code($response);
+                $body = wp_remote_retrieve_body($response);
+                $data = json_decode($body);
+                echo '<p>HTTP: <code>' . $code . '</code></p>';
+                if ($data) {
+                    echo '<p>Tag: <code>' . ($data->tag_name ?? 'N/A') . '</code></p>';
+                    echo '<p>Name: <code>' . ($data->name ?? 'N/A') . '</code></p>';
+                } else {
+                    echo '<p>Body (truncated): <pre>' . substr(esc_html($body), 0, 500) . '</pre></p>';
+                }
             }
             echo '</div>';
         });
