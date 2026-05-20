@@ -120,11 +120,7 @@
 
 .ib-locked {
     cursor: default !important;
-}
-
-.ib-locked:hover {
-    box-shadow: 0 0 0 2px rgba(150, 150, 150, 0.4) !important;
-    border-radius: 4px !important;
+    box-shadow: none !important;
 }
 
 #ib-key-reset-tip {
