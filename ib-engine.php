@@ -47,19 +47,21 @@ if (file_exists(IB_ENGINE_DIR . 'lib/plugin-update-checker/plugin-update-checker
         $ibUpdater->checkForUpdates();
         
         $update = $ibUpdater->getUpdate();
+        $state = get_site_option($ibUpdater->getUniqueName('option_name'), []);
         
-        add_action('admin_notices', function() use ($ibUpdater, $update) {
+        add_action('admin_notices', function() use ($ibUpdater, $update, $state) {
             echo '<div class="notice notice-info"><p><strong>IB Engine Debug:</strong></p>';
             echo '<p>Slug: <code>' . $ibUpdater->slug . '</code></p>';
             echo '<p>Update found: <code>' . ($update ? $update->version : 'NULL') . '</code></p>';
-            echo '<p>Current version: <code>' . $ibUpdater->getInstalledVersion() . '</code></p>';
+            echo '<p>State: <pre>' . print_r($state, true) . '</pre></p>';
             
-            // Check option
-            $opt = get_site_option('external_updates-ib-engine', 'NOT FOUND');
-            echo '<p>Option "external_updates-ib-engine": <code>' . (is_array($opt) ? print_r($opt, true) : $opt) . '</code></p>';
+            // Testear la API directamente desde el updater
+            $ref = $ibUpdater->api;
+            echo '<p>API GitHub user/repo: <code>' . $ref->userName . '/' . $ref->repositoryName . '</code></p>';
             
-            $opt2 = get_site_option('update_plugins', 'NOT FOUND');
-            echo '<p>Option "update_plugins" has IB? <code>' . (is_array($opt2) && isset($opt2->response['ib-engine/ib-engine.php']) ? 'YES' : 'NO') . '</code></p>';
+            // Llamar getLatestRelease manualmente
+            $latest = $ref->getLatestRelease();
+            echo '<p>getLatestRelease(): <code>' . ($latest ? $latest->tagName . ' v' . $latest->version : 'NULL') . '</code></p>';
             echo '</div>';
         });
     }
