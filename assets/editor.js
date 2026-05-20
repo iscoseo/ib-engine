@@ -17,7 +17,7 @@
                          '</div>').appendTo('body');
 
         // Tooltip flotante para reset por elemento
-        var $resetTip = $('<div id="ib-key-reset-tip">↺ Reset este elemento</div>').appendTo('body');
+        var $resetTip = null;
         var $currentEditable = null;
 
         var $saveBtn = $('#ib-save-btn');
@@ -35,7 +35,7 @@
             if (isLocked) {
                 $editables.attr('contenteditable', 'false').addClass('ib-locked');
                 $lockBtn.html('🔒').attr('title', 'Activar edición');
-                hideResetTip();
+                removeResetTip();
             } else {
                 $editables.attr('contenteditable', 'true').removeClass('ib-locked');
                 $lockBtn.html('🔓').attr('title', 'Bloquear edición');
@@ -127,41 +127,27 @@
             }
         });
 
-        function positionResetTip() {
-            if (!$currentEditable) return;
-            var offset = $currentEditable.offset();
-            if (!offset) return;
-            var tipW = $resetTip.outerWidth() || 110;
-            var tipH = $resetTip.outerHeight() || 30;
-            var scrollTop = $(window).scrollTop();
-            var scrollLeft = $(window).scrollLeft();
-            $resetTip.css({
-                left: (offset.left + $currentEditable.outerWidth() - tipW - scrollLeft) + 'px',
-                top: (offset.top - tipH - 6 - scrollTop) + 'px'
-            });
+        function removeResetTip() {
+            if ($resetTip) {
+                $resetTip.remove();
+                $resetTip = null;
+            }
+            if ($currentEditable) {
+                var $wrap = $currentEditable.parent('.ib-editable-wrap');
+                if ($wrap.length) {
+                    $wrap.replaceWith($currentEditable);
+                }
+                $currentEditable = null;
+            }
         }
 
         function showResetTip($el) {
+            removeResetTip();
+            $el.wrap('<span class="ib-editable-wrap" style="position:relative;display:inline-block;"></span>');
+            var $wrap = $el.parent();
+            $resetTip = $('<div id="ib-key-reset-tip">↺ Reset este elemento</div>').appendTo($wrap);
             $currentEditable = $el;
-            positionResetTip();
-            $resetTip.show();
         }
-
-        function hideResetTip() {
-            $resetTip.hide();
-            $currentEditable = null;
-        }
-
-        var ibScrollPending = false;
-        $(window).on('scroll', function() {
-            if ($resetTip.is(':visible') && !ibScrollPending) {
-                ibScrollPending = true;
-                requestAnimationFrame(function() {
-                    positionResetTip();
-                    ibScrollPending = false;
-                });
-            }
-        });
 
         $editables.on('click focus', function() {
             var $el = $(this);
@@ -170,11 +156,11 @@
             }
         }).on('focusout', function(e) {
             if (!$(e.relatedTarget).closest('#ib-key-reset-tip').length) {
-                hideResetTip();
+                removeResetTip();
             }
         });
 
-        $resetTip.on('click', function() {
+        $(document).on('click', '#ib-key-reset-tip', function() {
             if (!$currentEditable) return;
             var key = $currentEditable.data('ib-editable');
             if (!key) return;
@@ -202,7 +188,7 @@
 
         $(document).on('click', function(e) {
             if (!$(e.target).closest('#ib-key-reset-tip, [data-ib-editable]').length) {
-                hideResetTip();
+                removeResetTip();
             }
         });
 
