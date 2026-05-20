@@ -28,16 +28,14 @@ define('IB_ENGINE_VERSION', '1.0.0');
 define('IB_ENGINE_FILE', __FILE__);
 define('IB_ENGINE_DIR', plugin_dir_path(__FILE__));
 
-// Auto-updater desde GitHub (requiere lib/plugin-update-checker/)
+// Auto-updater desde GitHub
 if (file_exists(IB_ENGINE_DIR . 'lib/plugin-update-checker/plugin-update-checker.php')) {
     require_once IB_ENGINE_DIR . 'lib/plugin-update-checker/plugin-update-checker.php';
-    if (class_exists('YahnisElsts\PluginUpdateChecker\v5\PucFactory')) {
-        YahnisElsts\PluginUpdateChecker\v5\PucFactory::buildUpdateChecker(
-            'https://github.com/iscoseo/ib-engine/',
-            __FILE__,
-            'ib-engine'
-        );
-    }
+    YahnisElsts\PluginUpdateChecker\v5\PucFactory::buildUpdateChecker(
+        'https://github.com/iscoseo/ib-engine/',
+        __FILE__,
+        'ib-engine'
+    );
 }
 
 // Motor de secciones
