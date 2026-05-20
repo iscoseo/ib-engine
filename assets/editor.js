@@ -133,9 +133,11 @@
             if (!offset) return;
             var tipW = $resetTip.outerWidth() || 110;
             var tipH = $resetTip.outerHeight() || 30;
+            var scrollTop = $(window).scrollTop();
+            var scrollLeft = $(window).scrollLeft();
             $resetTip.css({
-                left: (offset.left + $currentEditable.outerWidth() - tipW) + 'px',
-                top: (offset.top - tipH - 6) + 'px'
+                left: (offset.left + $currentEditable.outerWidth() - tipW - scrollLeft) + 'px',
+                top: (offset.top - tipH - 6 - scrollTop) + 'px'
             });
         }
 
