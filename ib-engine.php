@@ -45,27 +45,25 @@ if (file_exists(IB_ENGINE_DIR . 'lib/plugin-update-checker/plugin-update-checker
         set_site_transient('update_plugins', null);
         wp_clean_plugins_cache();
         
-        // Disparar manualmente el check de updates
+        // Llamar checkForUpdates directo y ver qué encuentra
+        $ibUpdater->checkForUpdates();
+        $state = get_site_option('external_updates-ib-engine', 'NOT FOUND');
+        $updateObj = $ibUpdater->getUpdate();
+        
+        // Forzar wp_update_plugins también
         wp_update_plugins();
         $transient = get_site_transient('update_plugins');
         
-        add_action('admin_notices', function() use ($ibUpdater, $transient) {
+        add_action('admin_notices', function() use ($ibUpdater, $state, $updateObj, $transient) {
             echo '<div class="notice notice-info"><p><strong>IB Engine Debug:</strong></p>';
-            echo '<p>Slug: <code>' . $ibUpdater->slug . '</code></p>';
+            echo '<p>State option: <pre>' . print_r($state, true) . '</pre></p>';
+            echo '<p>getUpdate(): <code>' . ($updateObj ? 'v' . $updateObj->version . ' url:' . $updateObj->download_url : 'NULL') . '</code></p>';
+            echo '<p>Installed version: <code>' . $ibUpdater->getInstalledVersion() . '</code></p>';
+            echo '<p>--- transient after wp_update_plugins: ---</p>';
             echo '<p>has response? <code>' . (isset($transient->response['ib-engine/ib-engine.php']) ? 'YES' : 'NO') . '</code></p>';
-            if (isset($transient->response['ib-engine/ib-engine.php'])) {
-                $r = $transient->response['ib-engine/ib-engine.php'];
-                echo '<p>new_version: <code>' . $r->new_version . '</code></p>';
-                echo '<p>package: <code>' . $r->package . '</code></p>';
-            }
-            echo '<p>no_update count: <code>' . (isset($transient->no_update) ? count((array)$transient->no_update) : 0) . '</code></p>';
-            echo '<p>checked count: <code>' . (isset($transient->checked) ? count((array)$transient->checked) : 0) . '</code></p>';
-            if (isset($transient->checked)) {
-                foreach ((array)$transient->checked as $k => $v) {
-                    if (strpos($k, 'ib-engine') !== false) {
-                        echo '<p>checked[' . $k . ']: <code>' . $v . '</code></p>';
-                    }
-                }
+            echo '<p>has no_update? <code>' . (isset($transient->no_update['ib-engine/ib-engine.php']) ? 'YES' : 'NO') . '</code></p>';
+            if (isset($transient->no_update['ib-engine/ib-engine.php'])) {
+                echo '<p>no_update info: <pre>' . print_r($transient->no_update['ib-engine/ib-engine.php'], true) . '</pre></p>';
             }
             echo '</div>';
         });
