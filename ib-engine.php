@@ -36,15 +36,37 @@ if (file_exists(IB_ENGINE_DIR . 'lib/plugin-update-checker/plugin-update-checker
         __FILE__
     );
     
-    // DEBUG: Forzar comprobación en cada carga de admin
+    // DEBUG: Forzar comprobación
     if (is_admin() && isset($_GET['ib-debug'])) {
         delete_site_transient('update_plugins');
-        wp_clean_plugins_cache();
         set_site_transient('update_plugins', null);
-        add_action('admin_notices', function() use ($ibUpdater) {
-            $state = get_site_option($ibUpdater->getUniqueName('option_name'), []);
+        wp_clean_plugins_cache();
+        
+        // Forzar el check ahora
+        $ibUpdater->checkForUpdates();
+        
+        // Ver qué pilló de GitHub
+        $api = new ReflectionProperty($ibUpdater, 'api');
+        $api->setAccessible(true);
+        $github = $api->getValue($ibUpdater);
+        
+        $latest = $github->getLatestRelease();
+        
+        add_action('admin_notices', function() use ($ibUpdater, $latest, $github) {
             echo '<div class="notice notice-info"><p><strong>IB Engine Debug:</strong></p>';
-            echo '<pre style="font-size:11px;">' . print_r($state, true) . '</pre>';
+            echo '<p>Latest release: <code>' . ($latest ? $latest->tagName : 'NULL') . '</code></p>';
+            echo '<p>Username: <code>' . $github->userName . '</code> | Repo: <code>' . $github->repositoryName . '</code></p>';
+            
+            // Probar API directamente
+            $apiUrl = 'https://api.github.com/repos/' . $github->userName . '/' . $github->repositoryName . '/releases/latest';
+            $response = wp_remote_get($apiUrl, ['headers' => ['User-Agent' => 'WordPress/' . get_bloginfo('version')]]);
+            echo '<p>API status: <code>' . wp_remote_retrieve_response_code($response) . '</code></p>';
+            if (is_wp_error($response)) {
+                echo '<p>Error: <code>' . $response->get_error_message() . '</code></p>';
+            } else {
+                $body = json_decode(wp_remote_retrieve_body($response));
+                echo '<p>API Tag: <code>' . ($body->tag_name ?? 'N/A') . '</code></p>';
+            }
             echo '</div>';
         });
     }
