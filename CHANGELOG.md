@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.0.6] — 2026-05-20
+
+### Fixed
+- Sin hover ni caja gris en elementos cuando el candado está bloqueado.
+- Cursor pointer en botones funcionando correctamente con editor bloqueado.
+
 ## [1.0.5] — 2026-05-20
 
 ### Fixed
