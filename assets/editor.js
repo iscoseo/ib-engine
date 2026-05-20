@@ -151,6 +151,15 @@
             $currentEditable = null;
         }
 
+        $(window).on('scroll', function() {
+            if (!isLocked && $resetTip.is(':visible')) {
+                isLocked = true;
+                $editables.attr('contenteditable', 'false').addClass('ib-locked');
+                $lockBtn.html('🔒').attr('title', 'Activar edición');
+                hideResetTip();
+            }
+        });
+
         $editables.on('click focus', function() {
             var $el = $(this);
             if (!$el.hasClass('ib-locked')) {
