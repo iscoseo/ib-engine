@@ -165,10 +165,6 @@
             if (!$el.hasClass('ib-locked')) {
                 showResetTip($el);
             }
-        }).on('focusout', function(e) {
-            if (!$(e.relatedTarget).closest('#ib-key-reset-tip').length) {
-                hideResetTip();
-            }
         });
 
         $(document).on('click', '#ib-key-reset-tip', function() {
