@@ -119,7 +119,6 @@
 }
 
 .ib-locked {
-    cursor: default !important;
     box-shadow: none !important;
 }
 
