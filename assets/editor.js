@@ -131,9 +131,12 @@
             if (!$currentEditable) return;
             var offset = $currentEditable.offset();
             if (!offset) return;
+            var scrollTop = $(window).scrollTop();
+            var scrollLeft = $(window).scrollLeft();
+            var tipH = $resetTip.outerHeight();
             $resetTip.css({
-                left: (offset.left + $currentEditable.outerWidth() + 8) + 'px',
-                top: (offset.top - 30) + 'px'
+                left: (offset.left - scrollLeft) + 'px',
+                top: (offset.top - scrollTop - tipH - 4) + 'px'
             });
         }
 
