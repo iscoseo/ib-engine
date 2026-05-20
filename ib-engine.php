@@ -38,6 +38,15 @@ if (file_exists(IB_ENGINE_DIR . 'lib/plugin-update-checker/plugin-update-checker
     );
     
     add_filter('puc_request_timeout-ib-engine', function() { return 15; });
+    
+    // Icono del plugin
+    $iconUrl = 'https://iscobelda.com/wp-content/uploads/2022/09/cropped-ICONO.png';
+    add_filter('puc_pre_inject_info-ib-engine', function($info) use ($iconUrl) {
+        if ($info) {
+            $info->icons = array('1x' => $iconUrl, 'default' => $iconUrl);
+        }
+        return $info;
+    });
 }
 
 // Motor de secciones
