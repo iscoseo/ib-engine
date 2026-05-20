@@ -152,10 +152,10 @@
         }
 
         $(window).on('scroll', function() {
-            if (!isLocked && $resetTip.is(':visible')) {
-                isLocked = true;
-                $editables.attr('contenteditable', 'false').addClass('ib-locked');
-                $lockBtn.html('🔒').attr('title', 'Activar edición');
+            if ($resetTip.is(':visible')) {
+                if ($currentEditable && document.activeElement === $currentEditable[0]) {
+                    document.activeElement.blur();
+                }
                 hideResetTip();
             }
         });
