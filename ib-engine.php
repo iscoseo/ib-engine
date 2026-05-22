@@ -3,7 +3,7 @@
  * Plugin Name: IB Engine
  * Plugin URI: https://iscobelda.com/
  * Description: Crea páginas modulares con editor visual inline. Edita el contenido directamente desde el frontend — sin formularios ni panel de administración.
- * Version: 1.0.6
+ * Version: 1.0.7
  * Author: Iscobelda
  * Author URI: https://iscobelda.com/
  * Text Domain: ib-engine
