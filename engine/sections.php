@@ -27,7 +27,7 @@ if ( ! class_exists( 'IB_Sections_Engine' ) ) {
 
         private function __construct() {
             add_shortcode( 'sections', array( $this, 'render_sections' ) );
-            add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_page_styles' ) );
+            add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_page_styles' ), 20 );
         }
 
         /**
